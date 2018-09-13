@@ -1,0 +1,86 @@
+<!DOCTYPE HTML> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head> 
+		<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/>
+	</head>
+	<body>
+		<script src="mmachart.js"></script>
+		<script>
+			function loadData(url, startDate, endDate)
+			{
+				var request;
+				
+				request = new XMLHttpRequest();
+				request.open("GET", url, true);
+				request.onreadystatechange = request.onreadystatechange = function()
+				{
+					if(request.readyState == 3)
+					{
+						result = JSON.parse(request.responseText);
+
+						var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 225", width: "1010", height:"225", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+						var	seriesElements = result.data.result[0].values.length;;
+						var dval = 0;
+						var series = {};
+
+						series.avg = Array.from({length: seriesElements}, () => 0);
+						series.time = Array.from({length: seriesElements}, () => "");
+						series.units = "";
+						series.label = "";
+						series.title = result.data.result[0].metric.__name__;
+						series.style = "classic";
+						series.to = 15000;
+						series.yMin = 0;
+						series.start = new Date(startDate * 1000).toISOString();
+						series.end = new Date(endDate * 1000).toISOString();
+
+						while (dval < seriesElements) {
+							series.avg[dval] = result.data.result[0].values[dval][1];
+							series.time[dval] = new Date(result.data.result[0].values[dval][0] * 1000).toISOString();
+							dval = dval + 1;
+						}
+
+						var chart = new mmaChart(svg);
+						chart.addSeries(series);
+						chart.draw();
+
+						document.body.appendChild(svg);
+					}
+				}
+				request.send("");
+			}
+
+			function query_click() {
+				var query_string = document.getElementById('query').value;
+				var query_host = document.getElementById('host').value;
+				var select = document.getElementById('time');
+				var query_time = 3600;
+
+				if(select.options[select.selectedIndex].value == "hour") query_time = 3600;
+				if(select.options[select.selectedIndex].value == "day") query_time = 3600 * 24;
+
+				var startDate = ((Date.now() / 1000) - query_time);
+				var endDate = ((Date.now() / 1000));
+
+				loadData(query_host + "api/v1/query_range?query=" + query_string + "&start=" + startDate + "&end=" + endDate + "&step=15", startDate, endDate);
+
+			}
+		</script>
+	
+		<div style="font-size: 14px;">
+			Prometheus Host:
+			<input style="font-size: 14px;" id='host' size=25 value="http://localhost:9090/">
+			Metric:
+			<input style="font-size: 14px;" id='query' size=49 value="go_goroutines">
+			Time Range:
+			<select id="time">
+				<option value="hour">Last Hour</option>
+				<option value="day">Last Day</option>
+			</select>
+			<button style="font-size: 11px;" onclick='query_click()'>Query</button>
+		</div>
+		<hr>
+	</body>
+</html>
+
+
