@@ -15,7 +15,7 @@ Example:
 
 ![Example](example.png)
 
-See the tests for more examples.
+See the tests for more examples: https://dslik.github.io/svg-chart/mmatests.html
 
 An example of how to generate charts from Prometheus is also provided.
 
