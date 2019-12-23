@@ -2,7 +2,7 @@
 
 function heatstriplastval()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 75", width: "1010", height:"75", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -28,12 +28,13 @@ function heatstriplastval()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function twoheatstriplastval()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 90", width: "1010", height:"90", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 58", width: "1010", height:"58", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -83,7 +84,8 @@ function twoheatstriplastval()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 
@@ -114,7 +116,8 @@ function heatstrip()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function twoheatstrip()
@@ -150,7 +153,8 @@ function twoheatstrip()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function twoheatstripfixed()
@@ -188,7 +192,8 @@ function twoheatstripfixed()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function twoheatstripfixedlastval()
@@ -227,7 +232,8 @@ function twoheatstripfixedlastval()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function threeheatstrip()
@@ -296,7 +302,8 @@ function threeheatstrip()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLine()
@@ -326,7 +333,8 @@ function basicLine()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineNegative()
@@ -356,7 +364,8 @@ function basicLineNegative()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineZeroCrossing()
@@ -386,7 +395,8 @@ function basicLineZeroCrossing()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineNoFill()
@@ -416,7 +426,8 @@ function basicLineNoFill()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineLargeValues()
@@ -445,7 +456,8 @@ function basicLineLargeValues()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineSmallValues()
@@ -474,7 +486,8 @@ function basicLineSmallValues()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineLongTime()
@@ -503,7 +516,8 @@ function basicLineLongTime()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineLongTimeHeat()
@@ -535,7 +549,8 @@ function basicLineLongTimeHeat()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineLongerTime()
@@ -564,7 +579,8 @@ function basicLineLongerTime()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineLongestTime()
@@ -593,7 +609,8 @@ function basicLineLongestTime()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineVariableDuration()
@@ -622,7 +639,8 @@ function basicLineVariableDuration()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 
@@ -652,7 +670,8 @@ function basicLineGap()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function basicLineGapAtEnd()
@@ -684,7 +703,8 @@ function basicLineGapAtEnd()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 
@@ -717,7 +737,8 @@ function mmaTest()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 
@@ -767,7 +788,8 @@ function twoSeriesTest()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 
 	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 210", width: "1010", height:"210", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	chart = new mmaChart(svg);
@@ -778,7 +800,8 @@ function twoSeriesTest()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function twoSeriesTestGap()
@@ -828,7 +851,8 @@ function twoSeriesTestGap()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 
 	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 210", width: "1010", height:"210", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	chart = new mmaChart(svg);
@@ -839,7 +863,8 @@ function twoSeriesTestGap()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function threeSeriesTest()
@@ -907,7 +932,8 @@ function threeSeriesTest()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function threeSeriesTestSeperate()
@@ -975,7 +1001,8 @@ function threeSeriesTestSeperate()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function threeStyleTest()
@@ -1043,7 +1070,8 @@ function threeStyleTest()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function overfillLine()
@@ -1073,7 +1101,8 @@ function overfillLine()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function underfillLine()
@@ -1103,7 +1132,8 @@ function underfillLine()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function overAreaFill()
@@ -1137,7 +1167,8 @@ function overAreaFill()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function underAreaFill()
@@ -1171,7 +1202,8 @@ function underAreaFill()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function lineAreas()
@@ -1230,7 +1262,8 @@ function lineAreas()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function colorLine()
@@ -1287,7 +1320,8 @@ function colorLine()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 function colorLineAreas()
@@ -1366,7 +1400,8 @@ function colorLineAreas()
 	chart.draw();
 
 	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element)
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
 }
 
 

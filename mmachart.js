@@ -98,6 +98,8 @@ function formatValue(c, value) {
 	return(displayValue);
 }
 
+// ----------------------------------------------------------------------------------------
+
 class mmaChart {
 	// Creates a new chart object
 	constructor(svg) {
@@ -108,7 +110,7 @@ class mmaChart {
 		this.xo = 70;
 		this.yo = 10;
 		this.w = vbox[2] - this.xo - 5;
-		this.h = vbox[3] - this.yo - 47;
+		this.h = vbox[3] - this.yo - 15;
 	}
 
 	// Adds a series of data to a chart object
