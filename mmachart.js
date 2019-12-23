@@ -572,7 +572,7 @@ class mmaChart {
 													height: c.h, 
 													fill: "#" + colour,
 													"fill-opacity": c.fopacity },
-													'<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+													'<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
 					c_bin = c_bin + 1;
 				}
 			} else {
@@ -598,33 +598,33 @@ class mmaChart {
 						}
 
 						if(c.style == "overfill") {
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.max[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.max[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + formatValue(c, c.max[c_bin]) + '\nAvg: ' + formatValue(c, c.avg[c_bin]) + '\nMin: ' + formatValue(c, c.min[c_bin]) + '</title>'));
 						}
 
 						if(c.style == "underfill") {
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.min[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.min[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + formatValue(c, c.max[c_bin]) + '\nAvg: ' + formatValue(c, c.avg[c_bin]) + '\nMin: ' + formatValue(c, c.min[c_bin]) + '</title>'));
 						}
 					} else {
 						if(c.style == "area" || c.style == "classic") {
 							// Positive Values
 							if(c.avg[c_bin] > 0)
 							{
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.avg[c_bin] * c.hs) + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.avg[c_bin] * c.hs) + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
 							}
 
 							// Negative Values
 							if(c.avg[c_bin] < 0)
 							{
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] * -1) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] * -1) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
 							}
 						}
 
 						if(c.style == "overfill") {
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.avg[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.avg[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
 						}
 
 						if(c.style == "underfill") {
-								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
 						}
 					}
 					
