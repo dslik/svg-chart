@@ -1,7 +1,7 @@
 'use strict'
 
 // ----------------------------------------------------------------------------------------
-// Copyright 2018 David Slik, All rights reserved
+// Copyright 2018, 2019 David Slik, All rights reserved
 // INPUTS - constructor
 // 		svg - REQUIRED. SVG node
 //
@@ -44,6 +44,38 @@ function svgen(n, v, t) {
 		else { n.setAttributeNS(null, p, v[p]); }
 	if(t) n.innerHTML = t;
 	return n
+}
+
+// Hue to RGB for gradients
+function h2rgb(h) 
+{                 
+  var k = h / 60;
+  var x = (1 - Math.abs(k % 2 - 1));
+ 
+  var r1 = 0;
+  var g1 = 0;
+  var b1 = 0;
+    
+  if(k >= 0 && k <= 1) { r1=1; g1=x; }
+  if(k > 1 && k <= 2)  { r1=x; g1=1; }
+  if(k > 2 && k <= 3)  { g1=1; b1=x; }
+  if(k > 3 && k <= 4)  { g1=x; b1=1; }
+  if(k > 4 && k <= 5)  { r1=x; b1=1; }
+  if(k > 5 && k <= 6)  { r1=1; b1=x; }
+  
+  var r = (r1 * 255).toFixed(0);
+  var g = (g1 * 255).toFixed(0);
+  var b = (b1 * 255).toFixed(0);
+
+  var rs = Number(r).toString(16);
+  var gs = Number(g).toString(16);
+  var bs = Number(b).toString(16);
+
+  if (rs.length == 1) rs = "0" + rs;
+  if (gs.length == 1) gs = "0" + gs;
+  if (bs.length == 1) bs = "0" + bs;
+
+  return rs + gs + bs;  
 }
 
 // Formats numbers for display, including units and scaling
@@ -116,6 +148,11 @@ class mmaChart {
 			s.style = "area";
 		}
 
+		if(s.style == "heatstrip") {
+			s.noYAxis = true;	
+			s.fopacity = '0.5';
+		}
+
 		// Calculate Data Entries
 		s.elc = d.avg.length;
 		s.avg = Array.from({length: s.elc});
@@ -138,7 +175,13 @@ class mmaChart {
 				s.minValue = Math.min(...d.avg);
 			}
 		}
-		
+
+		// Store last value if showCurValue is enabled
+		if(d.hasOwnProperty('showCurValue')) {
+			s.last = d.avg[s.elc - 1];
+			s.w = this.w - 100;
+		};
+
 		// Units
 		if(d.hasOwnProperty('units')) { s.units = d.units; }
 		s.label = d.label;
@@ -291,19 +334,21 @@ class mmaChart {
 			s.wGridLines = Math.floor(s.w / 88) - 2;
 			s.hGridLines = Math.floor(s.h / 15);
 
-			var divOffset = ((s.maxValue - s.minValue) / (s.hGridLines));
-			if(!s.hasOwnProperty('yMax')) if(s.maxValue != 0) {
-				if((s.maxValue - Math.floor(s.maxValue)) !== 0) {
-					s.maxValue = s.maxValue + divOffset / 4;
-				} else {
-					s.maxValue = s.maxValue + Math.ceil(divOffset);
+			if(s.style != "heatstrip") {
+				var divOffset = ((s.maxValue - s.minValue) / (s.hGridLines));
+				if(!s.hasOwnProperty('yMax')) if(s.maxValue != 0) {
+					if((s.maxValue - Math.floor(s.maxValue)) !== 0) {
+						s.maxValue = s.maxValue + divOffset / 4;
+					} else {
+						s.maxValue = s.maxValue + Math.ceil(divOffset);
+					}
 				}
-			}
-			if(!s.hasOwnProperty('yMin')) if(s.minValue != 0) {
-				if((s.minValue - Math.floor(s.minValue)) !== 0) {
-					s.minValue = s.minValue - divOffset / 4;
-				} else {
-					s.minValue = s.minValue - Math.ceil(divOffset);
+				if(!s.hasOwnProperty('yMin')) if(s.minValue != 0) {
+					if((s.minValue - Math.floor(s.minValue)) !== 0) {
+						s.minValue = s.minValue - divOffset / 4;
+					} else {
+						s.minValue = s.minValue - Math.ceil(divOffset);
+					}
 				}
 			}
 
@@ -341,19 +386,45 @@ class mmaChart {
 		var svg = this.svg;
 		var numSeries = this.sa.length;
 		var seriesCounter = 0;
+		var checkCounter = 0;
+		var yoffset = 0;
 
 		while(seriesCounter != numSeries) {
 			var c = this.sa[seriesCounter];
 
-			if(!c.noYAxis) {
-				svg.appendChild(svgen('rect', { x: c.xo, y: c.yo + 1, width: c.w + 1, height: c.h, stroke:'#000000',  fill:'#F6F6F6' }));
-				
-				// Draw Y-Axis Grid Lines and labels
-				svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1, x2: c.xo + 1, y2: c.yo + 1, stroke:'#000000',  fill:'none' }));
-				svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1 + c.h, x2: c.xo + 1, y2: c.yo + 1 + c.h, stroke:'#000000',  fill:'none' }));
-				svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 8, "text-anchor":"end", "font-size":11 }, formatValue(c, c.maxValue)));
-				svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 1 + c.h, "text-anchor":"end", "font-size":11 }, formatValue(c, c.minValue)));
+			svg.appendChild(svgen('rect', { x: c.xo, y: c.yo + 1, width: c.w + 1, height: c.h, stroke:'#000000',  fill:'#F6F6F6' }));
+			
+			// Draw Y-Axis Grid Lines and labels
+			if(c.h >= 15) {
+				if(c.units) {
+					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1, x2: c.xo + 1, y2: c.yo + 1, stroke:'#000000',  fill:'none' }));
+					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1 + c.h, x2: c.xo + 1, y2: c.yo + 1 + c.h, stroke:'#000000',  fill:'none' }));
+						
+					yoffset = 0;
+					checkCounter = seriesCounter;
+					while(checkCounter != -1) {
+						if(this.sa[checkCounter].yo != c.yo) yoffset = 4;
+						checkCounter = checkCounter - 1;
+					}
 
+					svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset, "text-anchor":"end", "font-size":11 }, formatValue(c, c.maxValue)));
+					
+					yoffset = 0;
+					checkCounter = seriesCounter;
+					while(checkCounter != numSeries) {
+						if(this.sa[checkCounter].yo != c.yo) yoffset = -4;
+						checkCounter = checkCounter + 1;
+					}
+
+					svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset + c.h, "text-anchor":"end", "font-size":11 }, formatValue(c, c.minValue)));
+				}
+			} else {
+				svg.appendChild(svgen('line', { x1: c.xo - 30, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 10, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
+				svg.appendChild(svgen('line', { x1: c.xo - 30 + 10, y1: c.yo + (c.h / 2 - 3) + 2, x2: c.xo - 30 + 14, y2: c.yo + (c.h / 2 - 3) + 6, stroke: c.color,  fill:'none' }));
+				svg.appendChild(svgen('line', { x1: c.xo - 30 + 14, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 23, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
+			}
+
+			if(!c.noYAxis) {
 				var curLine = 1;
 				var vOffset = 0;
 				while(curLine < c.hGridLines)
@@ -419,6 +490,14 @@ class mmaChart {
 				
 				svg.appendChild(svgen('text', { x: c.xo + 1 + c.w, y: 8, "text-anchor":"end", "font-size":11 }, startDate + ' to ' + endDate));
 			}
+
+			// Draw Current Value
+			if(c.last) {
+				if(c.units) {
+					svg.appendChild(svgen('text', { x: c.xo + c.w + 100, y: c.yo + (c.h / 2) + 9, "text-anchor":"end", "font-size":22 }, formatValue(c, c.last)));
+				}
+			}
+
 			seriesCounter = seriesCounter + 1;
 		}
 		
@@ -455,113 +534,138 @@ class mmaChart {
 	drawData(svg) {
 		var g = this;
 
-		this.sa.forEach(function(c){
+		this.sa.forEach(function(c) {
 			var c_bin = 0;
 			var c_line = 0;
 			var offset = 0;
 
-			// Draw min/max bars
-			while (c_bin < c.elc) {
-				if(c.hasOwnProperty('max') && c.hasOwnProperty('min')) {
-					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.max[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.max[c_bin] - c.min[c_bin])  * c.hs,  fill: c.color, "fill-opacity":"0.5" }, '<title>Max: ' + c.max[c_bin] + ' ' + c.units + '\nAvg: ' + c.avg[c_bin] + ' ' + c.units + '\nMin: ' + c.min[c_bin] + ' ' + c.units + '</title>'));
+			if(c.style == "heatstrip") {
+				// Draw a heat strip chart
+				var colourScale = 255 / Math.abs(c.maxValue - c.minValue);
+				var barColour = "";
+				var colour = "";
+
+				while (c_bin < c.elc) {
+					// Calculate colour
+					barColour = ((c.avg[c_bin] - c.minValue) * colourScale).toFixed(0)
+					barColour = Number(barColour).toString(16);
+					if(barColour.length == 1) barColour = "0" + barColour;
+
+					colour = h2rgb((255 - ((c.avg[c_bin] - c.minValue) * colourScale)).toFixed(0));
+
+					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws),
+													y: c.yo + 1,
+													width: c.dur[c_bin] * c.ws, 
+													height: c.h, 
+													fill: "#" + colour,
+													"fill-opacity": c.fopacity },
+													'<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+					c_bin = c_bin + 1;
+				}
+			} else {
+				// Draw min/max bars
+				while (c_bin < c.elc) {
+					if(c.hasOwnProperty('max') && c.hasOwnProperty('min')) {
+						svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.max[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.max[c_bin] - c.min[c_bin])  * c.hs,  fill: c.color, "fill-opacity":"0.5" }, '<title>Max: ' + formatValue(c, c.max[c_bin]) + '\nAvg: ' + formatValue(c, c.avg[c_bin]) + '\nMin: ' + formatValue(c, c.min[c_bin]) + '</title>'));
+						
+						if(c.style == "area" || c.style == "classic") {
+							// Positive Values
+							if(c.min[c_bin] > 0)
+							{
+								if(c.minValue > 0) { offset = c.minValue * c.hs; } else { offset = 0; }
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.min[c_bin] * c.hs) - offset + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + formatValue(c, c.max[c_bin]) + '\nAvg: ' + formatValue(c, c.avg[c_bin]) + '\nMin: ' + formatValue(c, c.min[c_bin]) + '</title>'));
+							}
+							
+							// Negative Values
+							if(c.max[c_bin] < 0)
+							{
+								if(c.maxValue < 0) { offset = c.maxValue * c.hs; } else { offset = 0; }
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.max[c_bin] * -1) * c.hs) + offset,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + formatValue(c, c.max[c_bin]) + '\nAvg: ' + formatValue(c, c.avg[c_bin]) + '\nMin: ' + formatValue(c, c.min[c_bin]) + '</title>'));
+							}
+						}
+
+						if(c.style == "overfill") {
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.max[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
+						}
+
+						if(c.style == "underfill") {
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.min[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+						}
+					} else {
+						if(c.style == "area" || c.style == "classic") {
+							// Positive Values
+							if(c.avg[c_bin] > 0)
+							{
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.avg[c_bin] * c.hs) + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+							}
+
+							// Negative Values
+							if(c.avg[c_bin] < 0)
+							{
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] * -1) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+							}
+						}
+
+						if(c.style == "overfill") {
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.avg[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+						}
+
+						if(c.style == "underfill") {
+								svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
+						}
+					}
 					
-					if(c.style == "area" || c.style == "classic") {
-						// Positive Values
-						if(c.min[c_bin] > 0)
-						{
-							if(c.minValue > 0) { offset = c.minValue * c.hs; } else { offset = 0; }
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.min[c_bin] * c.hs) - offset + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + c.max[c_bin] + ' ' + c.units + '\nAvg: ' + c.avg[c_bin] + ' ' + c.units + '\nMin: ' + c.min[c_bin] + ' ' + c.units + '</title>'));
+					c_bin = c_bin + 1;
+				}
+
+				if(c.style != "color") {
+					// Draw gaps
+					c_bin = 0;
+					while (c_bin < c.elc - 1) {
+						if((c.time[c_bin] + c.dur[c_bin]) < c.time[c_bin + 1]) {
+							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] + c.dur[c_bin] - c.start) * c.ws), y: c.yo + 1, width: (c.time[c_bin + 1] - (c.time[c_bin] + c.dur[c_bin])) * c.ws, height: c.h,  fill:'#0000FF', "fill-opacity":"0.2" }));
+						}
+						c_bin = c_bin + 1;
+					}
+
+					if(c.end - c.time[c_bin] > c.to) {
+						svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] + c.dur[c_bin] - c.start) * c.ws), y: c.yo + 1, width: (c.end - c.time[c_bin] - c.dur[c_bin]) * c.ws, height: c.h,  fill:'#0000FF', "fill-opacity":"0.2" }));
+					}
+					
+					// Draw average polyline
+					c_bin = 0;
+					c_line = String(c.xo + (c.time[c_bin] - c.start) * c.ws) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin] - c.minValue) * c.hs)) + ", ";
+					
+					while (c_bin < (c.elc - 1)) {
+						c_line = c_line + String(c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin] - c.minValue) * c.hs));
+						
+						if(c_bin + 1 != c.elc) {
+							c_line = c_line + ", " + String(c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin + 1] - c.minValue) * c.hs)) + ", ";
 						}
 						
-						// Negative Values
-						if(c.max[c_bin] < 0)
-						{
-							if(c.maxValue < 0) { offset = c.maxValue * c.hs; } else { offset = 0; }
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.max[c_bin] * -1) * c.hs) + offset,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Max: ' + c.max[c_bin] + ' ' + c.units + '\nAvg: ' + c.avg[c_bin] + ' ' + c.units + '\nMin: ' + c.min[c_bin] + ' ' + c.units + '</title>'));
+						if(c_bin + 2 == c.elc) {
+							c_line = c_line + String(c.xo + (((c.time[c_bin + 1] - c.start) + c.dur[c_bin + 1]) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin + 1] - c.minValue) * c.hs));
 						}
+						c_bin = c_bin + 1;
 					}
-
-					if(c.style == "overfill") {
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.max[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
-					}
-
-					if(c.style == "underfill") {
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.min[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.min[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
-					}
+					
+					svg.appendChild(svgen('polyline', { points: c_line, fill:"none", stroke: c.color }));
 				} else {
-					if(c.style == "area" || c.style == "classic") {
-						// Positive Values
-						if(c.avg[c_bin] > 0)
-						{
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: (c.avg[c_bin] * c.hs) + 1,  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
+					// Draw color lines
+					c_bin = 0;
+
+					while (c_bin < (c.elc - 1)) {
+						if(c.avg[c_bin] != "#FFFFFF") {
+							//svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + 1, x2: c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws), y2: c.yo + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
+							svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + c.h + 1, x2: c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws), y2: c.yo + c.h + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
 						}
-
-						// Negative Values
-						if(c.avg[c_bin] < 0)
-						{
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h  + 1 - ((0 - c.minValue) * c.hs) - offset, width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] * -1) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
-						}
+						c_bin = c_bin + 1;
 					}
 
-					if(c.style == "overfill") {
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo, width: c.dur[c_bin] * c.ws, height: ((c.maxValue - c.avg[c_bin]) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
-					}
-
-					if(c.style == "underfill") {
-							svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws), y: c.yo + c.h - ((c.avg[c_bin] - c.minValue) * c.hs), width: c.dur[c_bin] * c.ws, height: ((c.avg[c_bin] - c.minValue) * c.hs),  fill: c.fcolor, "fill-opacity": c.fopacity }, '<title>Avg: ' + c.avg[c_bin] + ' ' + c.units + '</title>'));
-					}
-				}
-				
-				c_bin = c_bin + 1;
-			}
-
-			if(c.style != "color") {
-				// Draw gaps
-				c_bin = 0;
-				while (c_bin < c.elc - 1) {
-					if((c.time[c_bin] + c.dur[c_bin]) < c.time[c_bin + 1]) {
-						svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] + c.dur[c_bin] - c.start) * c.ws), y: c.yo + 1, width: (c.time[c_bin + 1] - (c.time[c_bin] + c.dur[c_bin])) * c.ws, height: c.h,  fill:'#0000FF', "fill-opacity":"0.2" }));
-					}
-					c_bin = c_bin + 1;
-				}
-
-				if(c.end - c.time[c_bin] > c.to) {
-					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] + c.dur[c_bin] - c.start) * c.ws), y: c.yo + 1, width: (c.end - c.time[c_bin] - c.dur[c_bin]) * c.ws, height: c.h,  fill:'#0000FF', "fill-opacity":"0.2" }));
-				}
-				
-				// Draw average polyline
-				c_bin = 0;
-				c_line = String(c.xo + (c.time[c_bin] - c.start) * c.ws) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin] - c.minValue) * c.hs)) + ", ";
-				
-				while (c_bin < (c.elc - 1)) {
-					c_line = c_line + String(c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin] - c.minValue) * c.hs));
-					
-					if(c_bin + 1 != c.elc) {
-						c_line = c_line + ", " + String(c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin + 1] - c.minValue) * c.hs)) + ", ";
-					}
-					
-					if(c_bin + 2 == c.elc) {
-						c_line = c_line + String(c.xo + (((c.time[c_bin + 1] - c.start) + c.dur[c_bin + 1]) * c.ws)) + "," + String(c.yo + c.h + 1 - ((c.avg[c_bin + 1] - c.minValue) * c.hs));
-					}
-					c_bin = c_bin + 1;
-				}
-				
-				svg.appendChild(svgen('polyline', { points: c_line, fill:"none", stroke: c.color }));
-			} else {
-				// Draw color lines
-				c_bin = 0;
-
-				while (c_bin < (c.elc - 1)) {
 					if(c.avg[c_bin] != "#FFFFFF") {
-						//svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + 1, x2: c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws), y2: c.yo + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
-						svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + c.h + 1, x2: c.xo + (((c.time[c_bin + 1] - c.start)) * c.ws), y2: c.yo + c.h + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
+						//svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + 1, x2: c.xo + c.w + 1, y2: c.yo + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
+						svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + c.h + 1, x2: c.xo + c.w + 1, y2: c.yo + c.h + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
 					}
-					c_bin = c_bin + 1;
-				}
-
-				if(c.avg[c_bin] != "#FFFFFF") {
-					//svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + 1, x2: c.xo + c.w + 1, y2: c.yo + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
-					svg.appendChild(svgen('line', { x1: c.xo + (((c.time[c_bin] - c.start)) * c.ws), y1: c.yo + c.h + 1, x2: c.xo + c.w + 1, y2: c.yo + c.h + 1, stroke: c.avg[c_bin], "stroke-width": 3, fill:'none' }));
 				}
 			}
 		})
