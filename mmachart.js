@@ -408,7 +408,7 @@ class mmaChart {
 			svg.appendChild(svgen('rect', { x: c.xo, y: c.yo + 1, width: c.w + 1, height: c.h, stroke:'#000000',  fill:'#F6F6F6' }));
 			
 			// Draw Y-Axis Grid Lines and labels
-			if(c.h >= 15) {
+			if(c.h >= 14) {
 				if(c.units) {
 					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1, x2: c.xo + 1, y2: c.yo + 1, stroke:'#000000',  fill:'none' }));
 					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1 + c.h, x2: c.xo + 1, y2: c.yo + 1 + c.h, stroke:'#000000',  fill:'none' }));
@@ -507,7 +507,9 @@ class mmaChart {
 			// Draw Current Value
 			if(c.last) {
 				if(c.units) {
-					svg.appendChild(svgen('text', { x: c.xo + c.w + 100, y: c.yo + (c.h / 2) + 9, "text-anchor":"end", "font-size":22 }, formatValue(c, c.last)));
+					var textHeight = c.h + 5;
+					if(textHeight > 24) {textHeight = 24}
+					svg.appendChild(svgen('text', { x: c.xo + c.w + 100, y: c.yo + (c.h / 2) + 9, "text-anchor":"end", "font-size": textHeight }, formatValue(c, c.last)));
 				}
 			}
 
