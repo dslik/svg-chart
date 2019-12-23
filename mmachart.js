@@ -339,9 +339,17 @@ class mmaChart {
 
 			if(!seriesID.includes(s.n)) {
 				s.h = this.h * (s.sh / totalHeight);
-				s.yo = seriesOffset + (seriesCounter * 4);
-				seriesOffset = seriesOffset + s.h;
+				s.yo = seriesOffset;
+				seriesOffset = seriesOffset + s.h + 4;
 				seriesID.push(s.n)
+			} else {
+				var seriesIntCounter = 0;
+				while(this.sa[seriesIntCounter].n != s.n) {
+					seriesIntCounter = seriesIntCounter + 1;
+				}
+				s.h = this.sa[seriesIntCounter].h;
+				s.yo = this.sa[seriesIntCounter].yo;
+				seriesIntCounter = 0;
 			}
 
 			s.wGridLines = Math.floor(s.w / 88) - 2;
@@ -401,65 +409,64 @@ class mmaChart {
 		var seriesCounter = 0;
 		var checkCounter = 0;
 		var yoffset = 0;
+		var seriesID = new Array;
 
 		while(seriesCounter != numSeries) {
 			var c = this.sa[seriesCounter];
 
-			svg.appendChild(svgen('rect', { x: c.xo, y: c.yo + 1, width: c.w + 1, height: c.h, stroke:'#000000',  fill:'#F6F6F6' }));
-			
-			// Draw Y-Axis Grid Lines and labels
-			if(c.h >= 14) {
-				if(c.units) {
-					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1, x2: c.xo + 1, y2: c.yo + 1, stroke:'#000000',  fill:'none' }));
-					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1 + c.h, x2: c.xo + 1, y2: c.yo + 1 + c.h, stroke:'#000000',  fill:'none' }));
-						
-					yoffset = 0;
-					checkCounter = seriesCounter;
-					while(checkCounter != -1) {
-						if(this.sa[checkCounter].yo != c.yo) yoffset = 4;
-						checkCounter = checkCounter - 1;
-					}
-
-					svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset, "text-anchor":"end", "font-size":11 }, formatValue(c, c.maxValue)));
-					
-					yoffset = 0;
-					checkCounter = seriesCounter;
-					while(checkCounter != numSeries) {
-						if(this.sa[checkCounter].yo != c.yo) yoffset = -4;
-						checkCounter = checkCounter + 1;
-					}
-
-					svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset + c.h, "text-anchor":"end", "font-size":11 }, formatValue(c, c.minValue)));
-				}
-			} else {
-				svg.appendChild(svgen('line', { x1: c.xo - 30, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 10, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
-				svg.appendChild(svgen('line', { x1: c.xo - 30 + 10, y1: c.yo + (c.h / 2 - 3) + 2, x2: c.xo - 30 + 14, y2: c.yo + (c.h / 2 - 3) + 6, stroke: c.color,  fill:'none' }));
-				svg.appendChild(svgen('line', { x1: c.xo - 30 + 14, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 23, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
-			}
-
-			if(!c.noYAxis) {
-				var curLine = 1;
-				var vOffset = 0;
-				while(curLine < c.hGridLines)
-				{
-					vOffset = c.yo + 1 + (c.h / c.hGridLines) * curLine;
-					svg.appendChild(svgen('line', { x1: c.xo - 5, y1: vOffset, x2: c.xo + c.w + 1, y2: vOffset, stroke:'#999999', fill:'none' }));
-					svg.appendChild(svgen('text', { x: c.xo - 10, y: vOffset + 4, "text-anchor":"end", "font-size":11 }, formatValue(c, (c.maxValue - c.minValue) * ((c.hGridLines - curLine)/c.hGridLines) + c.minValue)));
-					
-					curLine = curLine + 1;
-				}
+			if(!seriesID.includes(c.n)) {
+				svg.appendChild(svgen('rect', { x: c.xo, y: c.yo + 1, width: c.w + 1, height: c.h, stroke:'#000000',  fill:'#F6F6F6' }));
 				
-				// Draw Zero Line
-				if(c.minValue < 0 && c.maxValue > 0)
-				{
-					svg.appendChild(svgen('line', { x1: c.xo, y1: c.yo + 1 + ((c.maxValue) * c.hs), x2: c.xo + c.w + 1, y2: c.yo + 1 + ((c.maxValue) * c.hs), stroke:'#000000',  fill:'none' }));
+				// Draw Y-Axis Grid Lines and labels
+				if(c.h >= 14) {
+					if(c.units) {
+						svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1, x2: c.xo + 1, y2: c.yo + 1, stroke:'#000000',  fill:'none' }));
+						svg.appendChild(svgen('line', { x1: c.xo - 5, y1: c.yo + 1 + c.h, x2: c.xo + 1, y2: c.yo + 1 + c.h, stroke:'#000000',  fill:'none' }));
+							
+						yoffset = 0;
+						checkCounter = seriesCounter;
+						while(checkCounter != -1) {
+							if(this.sa[checkCounter].yo != c.yo) yoffset = 4;
+							checkCounter = checkCounter - 1;
+						}
+
+						svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset, "text-anchor":"end", "font-size":11 }, formatValue(c, c.maxValue)));
+						
+						yoffset = 0;
+						checkCounter = seriesCounter;
+						while(checkCounter != numSeries) {
+							if(this.sa[checkCounter].yo != c.yo) yoffset = -4;
+							checkCounter = checkCounter + 1;
+						}
+
+						svg.appendChild(svgen('text', { x: c.xo - 10, y: c.yo + 5 + yoffset + c.h, "text-anchor":"end", "font-size":11 }, formatValue(c, c.minValue)));
+					}
+				} else {
+					svg.appendChild(svgen('line', { x1: c.xo - 30, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 10, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
+					svg.appendChild(svgen('line', { x1: c.xo - 30 + 10, y1: c.yo + (c.h / 2 - 3) + 2, x2: c.xo - 30 + 14, y2: c.yo + (c.h / 2 - 3) + 6, stroke: c.color,  fill:'none' }));
+					svg.appendChild(svgen('line', { x1: c.xo - 30 + 14, y1: c.yo + (c.h / 2 - 3) + 6, x2: c.xo - 30 + 23, y2: c.yo + (c.h / 2 - 3) + 2, stroke: c.color,  fill:'none' }));
+				}
+
+				if(!c.noYAxis) {
+					var curLine = 1;
+					var vOffset = 0;
+					while(curLine < c.hGridLines)
+					{
+						vOffset = c.yo + 1 + (c.h / c.hGridLines) * curLine;
+						svg.appendChild(svgen('line', { x1: c.xo - 5, y1: vOffset, x2: c.xo + c.w + 1, y2: vOffset, stroke:'#999999', fill:'none' }));
+						svg.appendChild(svgen('text', { x: c.xo - 10, y: vOffset + 4, "text-anchor":"end", "font-size":11 }, formatValue(c, (c.maxValue - c.minValue) * ((c.hGridLines - curLine)/c.hGridLines) + c.minValue)));
+						
+						curLine = curLine + 1;
+					}
+					
+					// Draw Zero Line
+					if(c.minValue < 0 && c.maxValue > 0)
+					{
+						svg.appendChild(svgen('line', { x1: c.xo, y1: c.yo + 1 + ((c.maxValue) * c.hs), x2: c.xo + c.w + 1, y2: c.yo + 1 + ((c.maxValue) * c.hs), stroke:'#000000',  fill:'none' }));
+					}
 				}
 			}
 			
-			// X-Axis End Ticks
-			svg.appendChild(svgen('line', { x1: c.xo, y1: c.yo + c.h + 1, x2: c.xo, y2: c.yo + c.h + 5, stroke:'#000000',  fill:'none' }));
-			svg.appendChild(svgen('line', { x1: c.xo + c.w + 1, y1: c.yo + c.h + 1, x2: c.xo + c.w + 1, y2: c.yo + c.h + 5, stroke:'#000000',  fill:'none' }));
-
 			// X-Axis Labels
 			var dateRange = c.end - c.start;
 			
@@ -474,9 +481,13 @@ class mmaChart {
 			var tzOffset = new Date().getTimezoneOffset() * 60000;
 			var tickString = new Date(c.start - tzOffset).toISOString();
 
+			// X-Axis End Ticks
+			svg.appendChild(svgen('line', { x1: c.xo, y1: c.yo + c.h + 1, x2: c.xo, y2: c.yo + c.h + 5, stroke:'#000000',  fill:'none' }));
+			svg.appendChild(svgen('line', { x1: c.xo + c.w + 1, y1: c.yo + c.h + 1, x2: c.xo + c.w + 1, y2: c.yo + c.h + 5, stroke:'#000000',  fill:'none' }));
+		
 			if(seriesCounter == numSeries - 1) {
 				svg.appendChild(svgen('text', { x: c.xo, y: c.yo + c.h + 15, "text-anchor":"start", "font-size":11 }, tickString.substring(yStart, yEnd))); // Time Range
-				
+
 				tickString = new Date(c.end - tzOffset).toISOString();
 				svg.appendChild(svgen('text', { x: c.xo + c.w + 3, y: c.yo + c.h + 15, "text-anchor":"end", "font-size":11 }, tickString.substring(yStart, yEnd))); // Time Range
 			}
@@ -493,10 +504,11 @@ class mmaChart {
 					tickString = new Date((c.start - tzOffset) + ((c.end - c.start) / c.wGridLines) * curLine).toISOString();
 					svg.appendChild(svgen('text', { x: hOffset, y: c.yo + c.h + 15, "text-anchor":"middle", "font-size":11 }, tickString.substring(yStart, yEnd)));
 				}
-
+				
 				curLine = curLine + 1;
 			}
-			
+
+			// Draw render time
 			if(seriesCounter == 0 && g.w > 200) {				
 				var startDate = (new Date(c.start - tzOffset).toISOString()).substring(0, 19);
 				var endDate = (new Date(c.end - tzOffset).toISOString()).substring(0, 19);;
@@ -512,6 +524,8 @@ class mmaChart {
 					svg.appendChild(svgen('text', { x: c.xo + c.w + 100, y: c.yo + (c.h / 2) + 9, "text-anchor":"end", "font-size": textHeight }, formatValue(c, c.last)));
 				}
 			}
+
+			seriesID.push(c.n)
 
 			seriesCounter = seriesCounter + 1;
 		}
