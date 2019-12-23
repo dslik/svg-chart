@@ -271,6 +271,7 @@ function twoheatstripfixedlastval()
 		series.avg[dval] = (Math.sin((dval)/20) * 12 ).toString();
 		var mydate = new Date(Date.now() + (800000 * dval));
 		series.time[dval] = mydate.toISOString();
+		series.to = 1000000;
 		dval = dval + 1;
 	}
 
