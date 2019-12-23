@@ -582,10 +582,10 @@ class mmaChart {
 
 					colour = h2rgb((255 - ((c.avg[c_bin] - c.minValue) * colourScale)).toFixed(0));
 
-					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws),
-													y: c.yo + 1,
+					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws) + 0.5,
+													y: c.yo + 1.5,
 													width: c.dur[c_bin] * c.ws, 
-													height: c.h, 
+													height: c.h - 1, 
 													fill: "#" + colour,
 													"fill-opacity": c.fopacity },
 													'<title>Value: ' + formatValue(c, c.avg[c_bin]) + '</title>'));
