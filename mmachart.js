@@ -498,7 +498,7 @@ class mmaChart {
 			while(curLine < c.wGridLines)
 			{
 				hOffset = c.xo + (c.w / c.wGridLines) * curLine;
-				svg.appendChild(svgen('line', { x1: hOffset, y1: c.yo + 1, x2: hOffset, y2: c.yo + c.h + 5, stroke:'#999999',  fill:'none' }));
+				svg.appendChild(svgen('line', { x1: hOffset, y1: c.yo + 1.5, x2: hOffset, y2: c.yo + c.h + 5, stroke:'#999999',  fill:'none' }));
 
 				if(seriesCounter == numSeries - 1) {
 					tickString = new Date((c.start - tzOffset) + ((c.end - c.start) / c.wGridLines) * curLine).toISOString();
