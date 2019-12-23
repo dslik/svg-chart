@@ -91,7 +91,7 @@ function twoheatstriplastval()
 
 function heatstrip()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 75", width: "1010", height:"75", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -122,7 +122,7 @@ function heatstrip()
 
 function twoheatstrip()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 75", width: "1010", height:"75", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -159,7 +159,7 @@ function twoheatstrip()
 
 function twoheatstripfixed()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 75", width: "1010", height:"75", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -198,7 +198,7 @@ function twoheatstripfixed()
 
 function twoheatstripfixedlastval()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 75", width: "1010", height:"75", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var dval = 0;
 	var series = {};
@@ -238,7 +238,7 @@ function twoheatstripfixedlastval()
 
 function threeheatstrip()
 {
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 80", width: "1010", height:"80", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 48", width: "1010", height:"48", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
 	var	seriesElements = 800;
 	var	seriesElements = 200;
 	var dval = 0;

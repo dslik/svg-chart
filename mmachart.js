@@ -269,20 +269,31 @@ class mmaChart {
 		this.start = this.sa[0].start;
 		this.end = this.sa[0].end;
 
+		// Create an array of unique series to be rendered
 		while(seriesCounter != numSeries) {
 			var s = this.sa[seriesCounter];
 
 			if(!seriesID.includes(s.n)) {
+				// If the series is not already in the array, add it
 				totalHeight = totalHeight + s.sh;
 				seriesID.push(s.n)
 			} else {
+				// If the series is already in the array, suppress y-axis rendering
 				s.noYAxis = true;
 			}
 
+			// Set the x-axis to include the union of all series x-axis
 			if(this.start > s.start) this.start = s.start;
 			if(this.end < s.end) this.end = s.end;
 
 			seriesCounter = seriesCounter + 1;
+		}
+
+		// If there are more than one series to be rendered, shrink chart height
+		// to handle gaps inserted between series
+		if(seriesID.length > 1)
+		{
+			this.h = this.h - ((seriesID.length - 1) * 4);
 		}
 
 		// Set max/min values for overlayed charts
