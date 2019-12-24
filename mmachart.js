@@ -153,6 +153,32 @@ class mmaChart {
 		if(s.style == "heatstrip") {
 			s.noYAxis = true;	
 			s.fopacity = '0.5';
+			if(d.hasOwnProperty('gradient')) {
+				// Validate gradient variable
+				var csvName = d.gradient.replace(RegExp('[^a-zA-Z0-9-]','g'), '');
+
+				// Load Gradient from CSV File
+				var csvLines = [];
+				var csvFile = new XMLHttpRequest();
+				var rgvTriplet = "";
+
+			    csvFile.open("GET", "rgb/" + csvName + ".csv", false);
+			    csvFile.send();
+			    if(csvFile.status == 200) {
+				    s.gradient = new Array;
+				    csvLines = csvFile.responseText.split(/\r\n|\n/);
+				    csvLines.forEach(function(csvEntry) {
+				    	rgvTriplet = csvEntry.split(",");
+			    		rgvTriplet[0] = Number(rgvTriplet[0]).toString(16);
+			    		rgvTriplet[1] = Number(rgvTriplet[1]).toString(16);
+			    		rgvTriplet[2] = Number(rgvTriplet[2]).toString(16);
+						if(rgvTriplet[0].length == 1) rgvTriplet[0] = "0" + rgvTriplet[0];
+						if(rgvTriplet[1].length == 1) rgvTriplet[1] = "0" + rgvTriplet[1];
+						if(rgvTriplet[2].length == 1) rgvTriplet[2] = "0" + rgvTriplet[2];
+				    	s.gradient.push(rgvTriplet[0] + rgvTriplet[1] + rgvTriplet[2]);
+				    })
+			    }
+			}
 		}
 
 		// Calculate Data Entries
@@ -571,16 +597,15 @@ class mmaChart {
 			if(c.style == "heatstrip") {
 				// Draw a heat strip chart
 				var colourScale = 255 / Math.abs(c.maxValue - c.minValue);
-				var barColour = "";
 				var colour = "";
 
 				while (c_bin < c.elc) {
 					// Calculate colour
-					barColour = ((c.avg[c_bin] - c.minValue) * colourScale).toFixed(0)
-					barColour = Number(barColour).toString(16);
-					if(barColour.length == 1) barColour = "0" + barColour;
-
-					colour = h2rgb((255 - ((c.avg[c_bin] - c.minValue) * colourScale)).toFixed(0));
+					if(c.hasOwnProperty('gradient')) {
+						colour = c.gradient[((c.avg[c_bin] - c.minValue) * colourScale).toFixed(0)];
+					} else {
+						colour = h2rgb((255 - ((c.avg[c_bin] - c.minValue) * colourScale)).toFixed(0));
+					}					
 
 					svg.appendChild(svgen('rect', { x: c.xo + ((c.time[c_bin] - c.start) * c.ws) + 0.5,
 													y: c.yo + 1.5,

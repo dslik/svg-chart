@@ -1,5 +1,68 @@
 'use strict'
 
+function heatstrip()
+{
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var	seriesElements = 800;
+	var dval = 0;
+	var series = {};
+
+	series.avg = Array.from({length: seriesElements}, () => 0);
+	series.time = Array.from({length: seriesElements}, () => "");
+	series.units = "ºC";
+	series.title = "Title: Heat Strip Test"
+	series.label = "Series 1"
+	series.color = '#FF0000';
+	series.style = "heatstrip";
+
+	while (dval < seriesElements) {
+		series.avg[dval] = (Math.sin((dval)/50) * -6 - 4.25).toString();
+		var mydate = new Date(Date.now() + (1000 * dval));
+		series.time[dval] = mydate.toISOString();
+		dval = dval + 1;
+	}
+
+	var chart = new mmaChart(svg);
+	chart.addSeries(series);
+	chart.draw();
+
+	var element = document.getElementById('chart');
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
+}
+
+function heatstripcsv()
+{
+	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
+	var	seriesElements = 800;
+	var dval = 0;
+	var series = {};
+
+	series.avg = Array.from({length: seriesElements}, () => 0);
+	series.time = Array.from({length: seriesElements}, () => "");
+	series.units = "ºC";
+	series.title = "Title: Heat Strip with CSV Gradient Test"
+	series.label = "Series 1"
+	series.color = '#FF0000';
+	series.style = "heatstrip";
+	series.gradient = "CET-CBL1";
+
+	while (dval < seriesElements) {
+		series.avg[dval] = (Math.sin((dval)/50) * -6 - 4.25).toString();
+		var mydate = new Date(Date.now() + (1000 * dval));
+		series.time[dval] = mydate.toISOString();
+		dval = dval + 1;
+	}
+
+	var chart = new mmaChart(svg);
+	chart.addSeries(series);
+	chart.draw();
+
+	var element = document.getElementById('chart');
+	element.parentNode.appendChild(svg, element);
+	element.parentNode.appendChild(document.createElement("hr"), element);
+}
+
 function heatstriplastval()
 {
 	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
@@ -13,7 +76,7 @@ function heatstriplastval()
 	series.title = "Title: Heat Strip Test with Current Value"
 	series.label = "Series 1"
 	series.color = '#FF0000';
-	series.style = "heatstrip"
+	series.style = "heatstrip";
 	series.showCurValue = true;
 
 	while (dval < seriesElements) {
@@ -45,7 +108,7 @@ function twoheatstriplastval()
 	series.title = "Title: Heat Strip Test with Current Value"
 	series.label = "Series 1"
 	series.color = '#FF0000';
-	series.style = "heatstrip"
+	series.style = "heatstrip";
 	series.showCurValue = true;
 	series.yMax = 30;
 	series.yMin = -10;
@@ -76,43 +139,11 @@ function twoheatstriplastval()
 
 	//chart.addSeries(series, 2);
 
-	series.style = "heatstrip"
+	series.style = "heatstrip";
 	series.units = "ºC";
 
 	chart.addSeries(series, 2);
 
-	chart.draw();
-
-	var element = document.getElementById('chart');
-	element.parentNode.appendChild(svg, element);
-	element.parentNode.appendChild(document.createElement("hr"), element);
-}
-
-
-function heatstrip()
-{
-	var svg = svgen("svg", { version:"1.1", preserveAspectRatio:"none", 'viewbox':"0 0 1010 43", width: "1010", height:"43", id:"chart", 'xmlns':"http://www.w3.org/2000/svg", 'xmlns:xlink':"http://www.w3.org/1999/xlink"});
-	var	seriesElements = 800;
-	var dval = 0;
-	var series = {};
-
-	series.avg = Array.from({length: seriesElements}, () => 0);
-	series.time = Array.from({length: seriesElements}, () => "");
-	series.units = "ºC";
-	series.title = "Title: Heat Strip Test"
-	series.label = "Series 1"
-	series.color = '#FF0000';
-	series.style = "heatstrip"
-
-	while (dval < seriesElements) {
-		series.avg[dval] = (Math.sin((dval)/50) * -6 - 4.25).toString();
-		var mydate = new Date(Date.now() + (1000 * dval));
-		series.time[dval] = mydate.toISOString();
-		dval = dval + 1;
-	}
-
-	var chart = new mmaChart(svg);
-	chart.addSeries(series);
 	chart.draw();
 
 	var element = document.getElementById('chart');
